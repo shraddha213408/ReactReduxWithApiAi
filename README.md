@@ -15,7 +15,9 @@ Read More on https://api.ai/
 
 To check this project out, please clone it or download it in your computer and run Once in, the client key for api.ai needs to be configured in actions/index.js. Save and then in the command line.
 
-npm install & npm start
+1. npm install & 
+2. npm install --save react-modal
+3. npm start
 
 The project will run on localhost:8080/chat to get the chat window.
 
