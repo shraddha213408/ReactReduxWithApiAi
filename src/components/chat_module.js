@@ -46,6 +46,7 @@ class ChatModule extends Component {
 
 		this.openModal = this.openModal.bind(this);
 	    this.closeModal = this.closeModal.bind(this);
+	    this.quickReply = this.quickReply.bind(this);
 	}
 
 	openModal() {
@@ -58,12 +59,59 @@ class ChatModule extends Component {
 	componentDidUpdate(prevProps, prevState){
 		if(prevProps.chat !== this.props.chat){
 			Object.values(this.props.chat).map((res) => {
-				console.log('speech', res.speech);
-				if(res.speech !== undefined){
-					this.addMessage({message: res.speech, fromMe: false});
+				if(res.fulfillment !== undefined){
+					if(res.fulfillment.messages!== undefined){
+						res.fulfillment.messages.map((message) => {
+							if(message.type === 0){
+								if(message.speech !== '') {
+									this.addMessage({message: message.speech, fromMe: false});
+								}
+							}else if(message.type === 1){
+								if(message.title !== '' && message.title!==undefined || message.subtitle !== '' && message.subtitle!==undefined){
+									const cardMessage = [message.title, <br/>,  message.subtitle];
+									this.addMessage({message: cardMessage, fromMe: false});
+								}
+								if(message.imageUrl !== undefined){
+									const cardMessage = [<a href='https://belong.com.au/about-us' target='_blank'><img src={message.imageUrl} width='50px' height='50px'/></a>];
+									this.addMessage({message: cardMessage, fromMe: false});
+								}
+								if(message.buttons !== undefined){
+									message.buttons.map((cards) => {
+										const cardMessage = [<a href={cards.postback} target='_blank'><button className='btn btn-primary'>{cards.text}</button></a>];
+										this.addMessage({message: cardMessage, fromMe: false});
+									})
+								}
+							} else if(message.type === 2) {
+								if(message.replies !== undefined){
+									let reply = [];
+									let cardMessage;
+									message.replies.map((cards) => {
+										reply.push(<button className="btn btn-primary reply-btn" value={cards} onClick={this.quickReply}>{cards}</button>);
+										cardMessage = [message.title, <br/>, reply];
+									});
+									this.addMessage({message: cardMessage, fromMe: false});
+								}
+							} else if(message.type === 3){
+								if(message.imageUrl !== undefined){
+									const cardMessage = [<a href='https://belong.com.au/about-us' target='_blank'><img src={message.imageUrl} width='50px' height='50px'/></a>] ;
+									this.addMessage({message: cardMessage, fromMe: false});
+								}
+							}
+						});
+					}else{
+						if(res.fulfillment.speech !== '') {
+							this.addMessage({message: res.fulfillment.speech, fromMe: false});
+						}
+					}
 				}
 			})
 		}
+	}
+
+	quickReply(event) {
+		console.log(event.target.value);
+		this.addMessage({message: event.target.value, fromMe: true});
+		this.props.getChat(event.target.value);
 	}
 
 	onInputChange(event){
@@ -104,6 +152,9 @@ class ChatModule extends Component {
 		return (
 			<div>
 				<Link to="/">Back To Index</Link>
+				<Link to="/chat" className="btn btn-primary pull-xs-right" onClick={this.openModal}>
+					Chat
+				</Link>
 				<Modal isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal} style={customStyles}>
 				    <div className="container">
 			            <Messages messages={this.state.messages} />
