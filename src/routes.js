@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
-import PostsIndex from './components/posts_index';
+import PostsIndex from './components/post_index';
 import App from './components/app';
 import PostsNew from './components/posts_new';
 import PostsShow from './components/posts_show';
