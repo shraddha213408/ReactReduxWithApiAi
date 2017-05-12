@@ -17,7 +17,10 @@ To check this project out, please clone it or download it in your computer and r
 
 1. npm install & 
 2. npm install --save react-modal
-3. npm start
+3. npm install --save redux-promise
+4. npm install --save axios
+5. npm install --save html-parse-stringify
+6. npm start
 
 The project will run on localhost:8080/chat to get the chat window.
 
